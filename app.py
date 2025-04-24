@@ -15,7 +15,7 @@ load_dotenv()
 
 app = Flask(__name__)
 # Set CORS based on environment
-frontend_origin = os.getenv('FRONTEND_ORIGIN', 'http://localhost:5173')
+frontend_origin = os.getenv('FRONTEND_ORIGIN', 'https://happy-stone-0f87c1c1e.6.azurestaticapps.net')
 CORS(app, resources={
     r"/*": {
         "origins": [frontend_origin],
