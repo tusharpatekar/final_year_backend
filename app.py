@@ -16,14 +16,7 @@ load_dotenv()
 app = Flask(__name__)
 # Set CORS based on environment
 frontend_origin = os.getenv('FRONTEND_ORIGIN', 'https://happy-stone-0f87c1c1e.6.azurestaticapps.net')
-CORS(app, resources={
-    r"/*": {
-        "origins": [frontend_origin],
-        "methods": ["GET", "POST", "OPTIONS"],  # Explicitly allow methods
-        "allow_headers": ["Content-Type", "Authorization"],  # Allow headers used by Axios
-        "supports_credentials": True  # Optional, if cookies or credentials are used
-    }
-})
+CORS(app, supports_credentials=True, origins=["https://happy-stone-0f87c1c1e.6.azurestaticapps.net"])
 app.secret_key = os.urandom(24)
 logging.basicConfig(level=logging.DEBUG)
 app.logger.setLevel(logging.DEBUG)
