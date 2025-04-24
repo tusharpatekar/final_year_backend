@@ -5,13 +5,28 @@ from google.auth.transport import requests
 import sqlite3
 import os
 import base64
+import logging
 import requests
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+# Set CORS based on environment
+frontend_origin = os.getenv('FRONTEND_ORIGIN', 'http://localhost:5173')
+CORS(app, resources={
+    r"/*": {
+        "origins": [frontend_origin],
+        "methods": ["GET", "POST", "OPTIONS"],  # Explicitly allow methods
+        "allow_headers": ["Content-Type", "Authorization"],  # Allow headers used by Axios
+        "supports_credentials": True  # Optional, if cookies or credentials are used
+    }
+})
 app.secret_key = os.urandom(24)
-
+logging.basicConfig(level=logging.DEBUG)
+app.logger.setLevel(logging.DEBUG)
 # Database setup
 def setup_database():
     conn = sqlite3.connect('store.db')
@@ -33,6 +48,9 @@ def connect_db():
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'bucket')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -82,9 +100,12 @@ def signup():
 
 @app.route('/login', methods=['POST'])
 def login():
+    app.logger.info("Received request at /login endpoint")  # Log request arrival
     data = request.get_json()
+    app.logger.debug(f"Request data: {data}")  # Log the incoming data
     email = data.get('email')
     password = data.get('password')
+    app.logger.debug(f"Extracted email: {email}, password: {password}")  # Log extracted values
 
     conn = connect_db()
     cursor = conn.cursor()
@@ -93,7 +114,9 @@ def login():
     conn.close()
 
     if user:
+        app.logger.info(f"User {email} logged in successfully.")
         return jsonify({"message": "Login successful"}), 200
+    app.logger.warning(f"Failed login attempt for email: {email}")
     return jsonify({"error": "Invalid email or password"}), 401
 
 def allowed_file(filename):
@@ -145,4 +168,4 @@ def get_more_info(filepath):
 
 if __name__ == "__main__":
     setup_database()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
