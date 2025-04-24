@@ -14,19 +14,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-
-# Read FRONTEND_ORIGIN from .env (default to your static-hosted URL)
-frontend_origin = os.getenv(
-    'FRONTEND_ORIGIN',
-    'https://happy-stone-0f87c1c1e.6.azurestaticapps.net'
-)
-
-# Enable CORS for that origin, allow credentials, methods, and headers
 CORS(app,
      supports_credentials=True,
      origins=["https://happy-stone-0f87c1c1e.6.azurestaticapps.net"],
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "OPTIONS"])
+# Read FRONTEND_ORIGIN from .env (default to your static-hosted URL)
+frontend_origin = os.getenv(
+    'FRONTEND_ORIGIN',
+    'https://happy-stone-0f87c1c1e.6.azurestaticapps.net'
+)
 
 app.secret_key = os.urandom(24)
 logging.basicConfig(level=logging.DEBUG)
