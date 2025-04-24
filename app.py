@@ -58,25 +58,27 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# === ROUTES ===
-
+# === GLOBAL CORS PRE‐FLIGHT HANDLER ===
 @app.before_request
 def handle_options():
-    # If this is a preflight OPTIONS request, return the CORS headers immediately
     if request.method == 'OPTIONS':
-        return ('', 204, {
+        return '', 204, {
             'Access-Control-Allow-Origin': frontend_origin,
             'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type,Authorization',
             'Access-Control-Allow-Credentials': 'true'
-        })
+        }
 
-@app.route('/')
+# === ROUTES ===
+
+@app.route('/', methods=['GET', 'OPTIONS'])
 def home():
+    # OPTIONS handled above
     return render_template('index.html')
 
-@app.route('/google-login', methods=['POST'])
+@app.route('/google-login', methods=['POST', 'OPTIONS'])
 def google_login():
+    # OPTIONS handled above
     data = request.get_json()
     token = data.get('token')
     try:
@@ -115,8 +117,9 @@ def google_login():
             "status": "false"
         }), 400
 
-@app.route('/signup', methods=['POST'])
+@app.route('/signup', methods=['POST', 'OPTIONS'])
 def signup():
+    # OPTIONS handled above
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
@@ -134,14 +137,15 @@ def signup():
     except sqlite3.IntegrityError:
         return jsonify({"error": "Email already exists"}), 400
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'OPTIONS'])
 def login():
+    # OPTIONS handled above
     app.logger.info("Received request at /login endpoint")
-    data = request.get_json()
+    data = request.get_json(silent=True)
     app.logger.debug(f"Request data: {data}")
 
-    email = data.get('email')
-    password = data.get('password')
+    email = data.get('email') if data else None
+    password = data.get('password') if data else None
     app.logger.debug(f"Extracted email: {email}, password: {password}")
 
     conn = connect_db()
@@ -166,8 +170,9 @@ def allowed_file(filename):
         and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     )
 
-@app.route('/plantdisease', methods=['POST'])
+@app.route('/plantdisease', methods=['POST', 'OPTIONS'])
 def plantdisease():
+    # OPTIONS handled above
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
