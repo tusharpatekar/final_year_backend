@@ -22,13 +22,11 @@ frontend_origin = os.getenv(
 )
 
 # Enable CORS for that origin, allow credentials, methods, and headers
-CORS(
-    app,
-    supports_credentials=True,
-    origins=[frontend_origin],
-    methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"]
-)
+CORS(app,
+     supports_credentials=True,
+     origins=["https://happy-stone-0f87c1c1e.6.azurestaticapps.net"],
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "OPTIONS"])
 
 app.secret_key = os.urandom(24)
 logging.basicConfig(level=logging.DEBUG)
@@ -58,16 +56,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# === GLOBAL CORS PRE‐FLIGHT HANDLER ===
-@app.before_request
-def handle_options():
-    if request.method == 'OPTIONS':
-        return '', 204, {
-            'Access-Control-Allow-Origin': frontend_origin,
-            'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-            'Access-Control-Allow-Credentials': 'true'
-        }
+
 
 # === ROUTES ===
 
