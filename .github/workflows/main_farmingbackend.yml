@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - AlBackend
+name: Build and deploy Python app to Azure Web App - FarmingBackend
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
 
       - name: Create and start virtual environment
         run: |
@@ -68,14 +68,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_600A12A82F2A4C9395651D9B725424AA }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_AD31AE2E26AA4B37956BA98B6A9474E1 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_78E8716A3BE34466A22B162047FF03B8 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_AF69B2B994454797BA80D9C6EB9BC010 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_A264040186C547919FD08970340FFD08 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2E1806F8487F40A288D323E28D7CE7A1 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'AlBackend'
+          app-name: 'FarmingBackend'
           slot-name: 'Production'
           
