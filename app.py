@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["https://happy-stone-0f87c1c1e.6.azurestaticapps.net"])
 app.secret_key = os.urandom(24)
 logging.basicConfig(level=logging.DEBUG)
 app.logger.setLevel(logging.DEBUG)
