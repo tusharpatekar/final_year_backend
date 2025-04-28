@@ -14,7 +14,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=["https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net"], allow_headers=["Content-Type"], methods=["POST","GET", "OPTIONS"])
+API_URL = os.getenv('API_URL', 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net')
+
+CORS(app, supports_credentials=True, origins=[API_URL], allow_headers=["Content-Type"], methods=["POST","GET", "OPTIONS"])
 app.secret_key = os.urandom(24)
 logging.basicConfig(level=logging.DEBUG)
 app.logger.setLevel(logging.DEBUG)
