@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 import sqlite3
 import os
 import base64
+from flask_cors import CORS
 import logging
 import requests
 from werkzeug.utils import secure_filename
@@ -14,17 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app,
-     supports_credentials=True,
-     origins=["https://happy-stone-0f87c1c1e.6.azurestaticapps.net"],
-     allow_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "OPTIONS"])
-# Read FRONTEND_ORIGIN from .env (default to your static-hosted URL)
-frontend_origin = os.getenv(
-    'FRONTEND_ORIGIN',
-    'https://happy-stone-0f87c1c1e.6.azurestaticapps.net'
-)
-
+CORS(app)
 app.secret_key = os.urandom(24)
 logging.basicConfig(level=logging.DEBUG)
 app.logger.setLevel(logging.DEBUG)
@@ -46,25 +36,21 @@ def setup_database():
 def connect_db():
     return sqlite3.connect('store.db')
 
-# File‑upload config
+# File-upload config
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'bucket')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
-
 # === ROUTES ===
 
-@app.route('/', methods=['GET', 'OPTIONS'])
+@app.route('/', methods=['GET'])
 def home():
-    # OPTIONS handled above
     return render_template('index.html')
 
-@app.route('/google-login', methods=['POST', 'OPTIONS'])
+@app.route('/google-login', methods=['POST'])
 def google_login():
-    # OPTIONS handled above
     data = request.get_json()
     token = data.get('token')
     try:
@@ -103,9 +89,8 @@ def google_login():
             "status": "false"
         }), 400
 
-@app.route('/signup', methods=['POST', 'OPTIONS'])
+@app.route('/signup', methods=['POST'])
 def signup():
-    # OPTIONS handled above
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
@@ -123,9 +108,8 @@ def signup():
     except sqlite3.IntegrityError:
         return jsonify({"error": "Email already exists"}), 400
 
-@app.route('/login', methods=['POST', 'OPTIONS'])
+@app.route('/login', methods=['POST'])
 def login():
-    # OPTIONS handled above
     app.logger.info("Received request at /login endpoint")
     data = request.get_json(silent=True)
     app.logger.debug(f"Request data: {data}")
@@ -156,9 +140,8 @@ def allowed_file(filename):
         and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     )
 
-@app.route('/plantdisease', methods=['POST', 'OPTIONS'])
+@app.route('/plantdisease', methods=['POST'])
 def plantdisease():
-    # OPTIONS handled above
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
@@ -218,4 +201,4 @@ def get_more_info(filepath):
 
 if __name__ == "__main__":
     setup_database()
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
