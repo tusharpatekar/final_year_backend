@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+
 import sqlite3
 import os
 import base64
@@ -14,8 +15,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-API_URL = "http://localhost:5173"
-# API_URL = 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net'
+# API_URL = "http://localhost:5173"
+API_URL = "https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net"
 # API_URL = os.getenv('API_URL', 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net')
 
 CORS(app, supports_credentials=True, origins=[API_URL], allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
@@ -58,13 +59,16 @@ def home():
 def google_login():
     data = request.get_json()
     token = data.get('token') or data.get('credential')  # Handle both 'token' and 'credential' keys
+    # print(token)
     try:
+        app.logger.info(f"Received token: {token}")
         CLIENT_ID = '763127770724-isjj3oae0bug2vk42ueo8090h4je9jpa.apps.googleusercontent.com'
         idinfo = id_token.verify_oauth2_token(
             token,
             google_requests.Request(),
             CLIENT_ID
         )
+        app.logger.info(f"google info : {idinfo}")
         email = idinfo.get('email')
 
         with connect_db() as conn:
