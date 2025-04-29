@@ -17,27 +17,28 @@ app = Flask(__name__)
 API_URL = 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net'
 API_URL = os.getenv('API_URL', 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net')
 
-CORS(app, supports_credentials=True, origins=[API_URL], allow_headers=["Content-Type"], methods=["POST","GET", "OPTIONS"])
+CORS(app, supports_credentials=True, origins=[API_URL], allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
 app.secret_key = os.urandom(24)
 logging.basicConfig(level=logging.DEBUG)
 app.logger.setLevel(logging.DEBUG)
 
 # Database setup
 def setup_database():
-    conn = sqlite3.connect('store.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    with sqlite3.connect('store.db', timeout=10) as conn:
+        conn.execute('PRAGMA journal_mode=WAL;')  # Enable WAL mode
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL
+            )
+        ''')
+        conn.commit()
 
 def connect_db():
-    return sqlite3.connect('store.db')
+    # Set timeout to 10 seconds to wait for locks
+    return sqlite3.connect('store.db', timeout=10)
 
 # File-upload config
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -65,20 +66,20 @@ def google_login():
         )
         email = idinfo.get('email')
 
-        conn = connect_db()
-        cursor = conn.cursor()
-        cursor.execute(
-            'SELECT * FROM users WHERE email = ?',
-            (email,)
-        )
-        user = cursor.fetchone()
-        if not user:
+        with connect_db() as conn:
+            conn.execute('PRAGMA journal_mode=WAL;')  # Ensure WAL mode
+            cursor = conn.cursor()
             cursor.execute(
-                'INSERT INTO users (email, password) VALUES (?, ?)',
-                (email, '')
+                'SELECT * FROM users WHERE email = ?',
+                (email,)
             )
-            conn.commit()
-        conn.close()
+            user = cursor.fetchone()
+            if not user:
+                cursor.execute(
+                    'INSERT INTO users (email, password) VALUES (?, ?)',
+                    (email, '')
+                )
+                conn.commit()
 
         return jsonify({
             "message": "Google Login successful",
@@ -86,11 +87,15 @@ def google_login():
             "status": "true"
         }), 200
 
-    except ValueError:
+    except ValueError as ve:
+        app.logger.error(f"Google login failed: {ve}")
         return jsonify({
             "error": "Invalid token",
             "status": "false"
         }), 400
+    except Exception as e:
+        app.logger.error(f"Unexpected error in google-login: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -98,18 +103,26 @@ def signup():
     email = data.get('email')
     password = data.get('password')
     try:
-        conn = connect_db()
-        cursor = conn.cursor()
-        cursor.execute(
-            'INSERT INTO users (email, password) VALUES (?, ?)',
-            (email, password)
-        )
-        conn.commit()
-        conn.close()
+        with connect_db() as conn:
+            conn.execute('PRAGMA journal_mode=WAL;')  # Ensure WAL mode
+            cursor = conn.cursor()
+            cursor.execute(
+                'INSERT INTO users (email, password) VALUES (?, ?)',
+                (email, password)
+            )
+            conn.commit()
+        app.logger.info(f"User {email} signed up successfully")
         return jsonify({"message": "Signup successful"}), 200
 
     except sqlite3.IntegrityError:
+        app.logger.warning(f"Signup failed: Email {email} already exists")
         return jsonify({"error": "Email already exists"}), 400
+    except sqlite3.OperationalError as oe:
+        app.logger.error(f"Database error in signup: {oe}")
+        return jsonify({"error": "Database is temporarily unavailable"}), 503
+    except Exception as e:
+        app.logger.error(f"Unexpected error in signup: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -121,21 +134,29 @@ def login():
     password = data.get('password') if data else None
     app.logger.debug(f"Extracted email: {email}, password: {password}")
 
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute(
-        'SELECT * FROM users WHERE email = ? AND password = ?',
-        (email, password)
-    )
-    user = cursor.fetchone()
-    conn.close()
+    try:
+        with connect_db() as conn:
+            conn.execute('PRAGMA journal_mode=WAL;')  # Ensure WAL mode
+            cursor = conn.cursor()
+            cursor.execute(
+                'SELECT * FROM users WHERE email = ? AND password = ?',
+                (email, password)
+            )
+            user = cursor.fetchone()
 
-    if user:
-        app.logger.info(f"User {email} logged in successfully.")
-        return jsonify({"message": "Login successful"}), 200
+        if user:
+            app.logger.info(f"User {email} logged in successfully")
+            return jsonify({"message": "Login successful"}), 200
 
-    app.logger.warning(f"Failed login attempt for email: {email}")
-    return jsonify({"error": "Invalid email or password"}), 401
+        app.logger.warning(f"Failed login attempt for email: {email}")
+        return jsonify({"error": "Invalid email or password"}), 401
+
+    except sqlite3.OperationalError as oe:
+        app.logger.error(f"Database error in login: {oe}")
+        return jsonify({"error": "Database is temporarily unavailable"}), 503
+    except Exception as e:
+        app.logger.error(f"Unexpected error in login: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 def allowed_file(filename):
     return (
