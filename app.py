@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+#API_URL = 'http://localhost:5173'
 API_URL = 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net'
 API_URL = os.getenv('API_URL', 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net')
 
