@@ -14,8 +14,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-# API_URL = "http://localhost:5173"
-API_URL = 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net'
+API_URL = "http://localhost:5173"
+# API_URL = 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net'
 # API_URL = os.getenv('API_URL', 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net')
 
 CORS(app, supports_credentials=True, origins=[API_URL], allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
