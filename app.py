@@ -14,9 +14,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-#API_URL = 'http://localhost:5173'
+# API_URL = "http://localhost:5173"
 API_URL = 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net'
-API_URL = os.getenv('API_URL', 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net')
+# API_URL = os.getenv('API_URL', 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net')
 
 CORS(app, supports_credentials=True, origins=[API_URL], allow_headers=["Content-Type"], methods=["POST", "GET", "OPTIONS"])
 app.secret_key = os.urandom(24)
@@ -57,9 +57,9 @@ def home():
 @app.route('/google-login', methods=['POST'])
 def google_login():
     data = request.get_json()
-    token = data.get('token')
+    token = data.get('token') or data.get('credential')  # Handle both 'token' and 'credential' keys
     try:
-        CLIENT_ID = '566583002745-gra1pr44qucldi81neb6er9ud7g1d66b.apps.googleusercontent.com'
+        CLIENT_ID = '763127770724-isjj3oae0bug2vk42ueo8090h4je9jpa.apps.googleusercontent.com'
         idinfo = id_token.verify_oauth2_token(
             token,
             google_requests.Request(),
