@@ -196,7 +196,7 @@ def get_more_info(filepath):
  
     # Gemini 1.5 Pro API endpoint and key
     endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent"
-    api_key = "AIzaSyDLryzPzgltN6XffTSv-_85mZUig6bwgbg"  # Store your API key in an environment variable
+    api_key = "AIzaSyA5KSS8BH-zwH7-nEkem7mkfCStnbIA_z0"  # Store your API key in an environment variable
  
  
     url = f"{endpoint}?key={api_key}"
