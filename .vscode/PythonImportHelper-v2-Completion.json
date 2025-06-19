@@ -193,7 +193,7 @@
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def get_more_info(filepath):\n    # Read and encode the image\n    with open(filepath, 'rb') as image_file:\n        encoded_image = base64.b64encode(image_file.read()).decode('utf-8')\n    # Gemini 1.5 Pro API endpoint and key\n    endpoint = \"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent\"\n    api_key = \"AIzaSyDLryzPzgltN6XffTSv-_85mZUig6bwgbg\"  # Store your API key in an environment variable\n    url = f\"{endpoint}?key={api_key}\"\n    headers = {\n        \"Content-Type\": \"application/json\"",
+        "peekOfCode": "def get_more_info(filepath):\n    # Read and encode the image\n    with open(filepath, 'rb') as image_file:\n        encoded_image = base64.b64encode(image_file.read()).decode('utf-8')\n    # Gemini 1.5 Pro API endpoint and key\n    endpoint = \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent\"\n    api_key = \"AIzaSyA5KSS8BH-zwH7-nEkem7mkfCStnbIA_z0\"  # Store your API key in an environment variable\n    url = f\"{endpoint}?key={api_key}\"\n    headers = {\n        \"Content-Type\": \"application/json\"",
         "detail": "app",
         "documentation": {}
     },
