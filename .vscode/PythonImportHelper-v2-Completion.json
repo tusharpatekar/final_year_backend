@@ -1,0 +1,263 @@
+[
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "render_template",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "request",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "jsonify",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "id_token",
+        "importPath": "google.oauth2",
+        "description": "google.oauth2",
+        "isExtraImport": true,
+        "detail": "google.oauth2",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "importPath": "google.auth.transport",
+        "description": "google.auth.transport",
+        "isExtraImport": true,
+        "detail": "google.auth.transport",
+        "documentation": {}
+    },
+    {
+        "label": "sqlite3",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sqlite3",
+        "description": "sqlite3",
+        "detail": "sqlite3",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "base64",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "base64",
+        "description": "base64",
+        "detail": "base64",
+        "documentation": {}
+    },
+    {
+        "label": "CORS",
+        "importPath": "flask_cors",
+        "description": "flask_cors",
+        "isExtraImport": true,
+        "detail": "flask_cors",
+        "documentation": {}
+    },
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "secure_filename",
+        "importPath": "werkzeug.utils",
+        "description": "werkzeug.utils",
+        "isExtraImport": true,
+        "detail": "werkzeug.utils",
+        "documentation": {}
+    },
+    {
+        "label": "load_dotenv",
+        "importPath": "dotenv",
+        "description": "dotenv",
+        "isExtraImport": true,
+        "detail": "dotenv",
+        "documentation": {}
+    },
+    {
+        "label": "setup_database",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def setup_database():\n    with sqlite3.connect('store.db', timeout=10) as conn:\n        conn.execute('PRAGMA journal_mode=WAL;')  # Enable WAL mode\n        cursor = conn.cursor()\n        cursor.execute('''\n            CREATE TABLE IF NOT EXISTS users (\n                id INTEGER PRIMARY KEY AUTOINCREMENT,\n                email TEXT UNIQUE NOT NULL,\n                password TEXT NOT NULL\n            )",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "connect_db",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def connect_db():\n    # Set timeout to 10 seconds to wait for locks\n    return sqlite3.connect('store.db', timeout=10)\n# File-upload config\nBASE_DIR = os.path.dirname(os.path.realpath(__file__))\nUPLOAD_FOLDER = os.path.join(BASE_DIR, 'bucket')\nALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}\nos.makedirs(UPLOAD_FOLDER, exist_ok=True)\napp.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER\n# === ROUTES ===",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "home",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def home():\n    return render_template('index.html')\n@app.route('/google-login', methods=['POST'])\ndef google_login():\n    data = request.get_json()\n    token = data.get('token') or data.get('credential')  # Handle both 'token' and 'credential' keys\n    # print(token)\n    try:\n        app.logger.info(f\"Received token: {token}\")\n        CLIENT_ID = '763127770724-isjj3oae0bug2vk42ueo8090h4je9jpa.apps.googleusercontent.com'",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "google_login",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def google_login():\n    data = request.get_json()\n    token = data.get('token') or data.get('credential')  # Handle both 'token' and 'credential' keys\n    # print(token)\n    try:\n        app.logger.info(f\"Received token: {token}\")\n        CLIENT_ID = '763127770724-isjj3oae0bug2vk42ueo8090h4je9jpa.apps.googleusercontent.com'\n        idinfo = id_token.verify_oauth2_token(\n            token,\n            google_requests.Request(),",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "signup",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def signup():\n    data = request.get_json()\n    email = data.get('email')\n    password = data.get('password')\n    try:\n        with connect_db() as conn:\n            conn.execute('PRAGMA journal_mode=WAL;')  # Ensure WAL mode\n            cursor = conn.cursor()\n            cursor.execute(\n                'INSERT INTO users (email, password) VALUES (?, ?)',",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "login",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def login():\n    app.logger.info(\"Received request at /login endpoint\")\n    data = request.get_json(silent=True)\n    app.logger.debug(f\"Request data: {data}\")\n    email = data.get('email') if data else None\n    password = data.get('password') if data else None\n    app.logger.debug(f\"Extracted email: {email}, password: {password}\")\n    try:\n        with connect_db() as conn:\n            conn.execute('PRAGMA journal_mode=WAL;')  # Ensure WAL mode",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "allowed_file",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def allowed_file(filename):\n    return (\n        '.' in filename\n        and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS\n    )\n@app.route('/plantdisease', methods=['POST'])\ndef plantdisease():\n    if 'file' not in request.files:\n        return jsonify({\"error\": \"No file part\"}), 400\n    file = request.files['file']",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "plantdisease",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def plantdisease():\n    if 'file' not in request.files:\n        return jsonify({\"error\": \"No file part\"}), 400\n    file = request.files['file']\n    if file.filename == '':\n        return jsonify({\"error\": \"No selected file\"}), 400\n    if not allowed_file(file.filename):\n        return jsonify({\"error\": \"Invalid file type\"}), 400\n    filename = secure_filename(file.filename)\n    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "get_more_info",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def get_more_info(filepath):\n    # Read and encode the image\n    with open(filepath, 'rb') as image_file:\n        encoded_image = base64.b64encode(image_file.read()).decode('utf-8')\n    # Gemini 1.5 Pro API endpoint and key\n    endpoint = \"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent\"\n    api_key = \"AIzaSyDLryzPzgltN6XffTSv-_85mZUig6bwgbg\"  # Store your API key in an environment variable\n    url = f\"{endpoint}?key={api_key}\"\n    headers = {\n        \"Content-Type\": \"application/json\"",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app = Flask(__name__)\n# API_URL = \"http://localhost:5173\"\nAPI_URL = \"https://nice-glacier-080ccc81e.1.azurestaticapps.net\"\n# API_URL = os.getenv('API_URL', 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net')\nCORS(app, supports_credentials=True, origins=[API_URL], allow_headers=[\"Content-Type\"], methods=[\"POST\", \"GET\", \"OPTIONS\"])\napp.secret_key = os.urandom(24)\nlogging.basicConfig(level=logging.DEBUG)\napp.logger.setLevel(logging.DEBUG)\n# Database setup\ndef setup_database():",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "API_URL",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "API_URL = \"https://nice-glacier-080ccc81e.1.azurestaticapps.net\"\n# API_URL = os.getenv('API_URL', 'https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net')\nCORS(app, supports_credentials=True, origins=[API_URL], allow_headers=[\"Content-Type\"], methods=[\"POST\", \"GET\", \"OPTIONS\"])\napp.secret_key = os.urandom(24)\nlogging.basicConfig(level=logging.DEBUG)\napp.logger.setLevel(logging.DEBUG)\n# Database setup\ndef setup_database():\n    with sqlite3.connect('store.db', timeout=10) as conn:\n        conn.execute('PRAGMA journal_mode=WAL;')  # Enable WAL mode",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app.secret_key",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app.secret_key = os.urandom(24)\nlogging.basicConfig(level=logging.DEBUG)\napp.logger.setLevel(logging.DEBUG)\n# Database setup\ndef setup_database():\n    with sqlite3.connect('store.db', timeout=10) as conn:\n        conn.execute('PRAGMA journal_mode=WAL;')  # Enable WAL mode\n        cursor = conn.cursor()\n        cursor.execute('''\n            CREATE TABLE IF NOT EXISTS users (",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "BASE_DIR",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "BASE_DIR = os.path.dirname(os.path.realpath(__file__))\nUPLOAD_FOLDER = os.path.join(BASE_DIR, 'bucket')\nALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}\nos.makedirs(UPLOAD_FOLDER, exist_ok=True)\napp.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER\n# === ROUTES ===\n@app.route('/', methods=['GET'])\ndef home():\n    return render_template('index.html')\n@app.route('/google-login', methods=['POST'])",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "UPLOAD_FOLDER",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "UPLOAD_FOLDER = os.path.join(BASE_DIR, 'bucket')\nALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}\nos.makedirs(UPLOAD_FOLDER, exist_ok=True)\napp.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER\n# === ROUTES ===\n@app.route('/', methods=['GET'])\ndef home():\n    return render_template('index.html')\n@app.route('/google-login', methods=['POST'])\ndef google_login():",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "ALLOWED_EXTENSIONS",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}\nos.makedirs(UPLOAD_FOLDER, exist_ok=True)\napp.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER\n# === ROUTES ===\n@app.route('/', methods=['GET'])\ndef home():\n    return render_template('index.html')\n@app.route('/google-login', methods=['POST'])\ndef google_login():\n    data = request.get_json()",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app.config['UPLOAD_FOLDER']",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER\n# === ROUTES ===\n@app.route('/', methods=['GET'])\ndef home():\n    return render_template('index.html')\n@app.route('/google-login', methods=['POST'])\ndef google_login():\n    data = request.get_json()\n    token = data.get('token') or data.get('credential')  # Handle both 'token' and 'credential' keys\n    # print(token)",
+        "detail": "app",
+        "documentation": {}
+    }
+]
